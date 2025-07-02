@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>{{ task.title }}</h2>
+<p>{{ task.description }}</p>
+<p>Статус: <span>{{ task.status }}</span></p>
+<p>Пріоритет: <span>{{ task.priority }}</span></p>
+<a href="#">Редагувати</a>
+<a href="#">Видалити</a>
+{% endblock %}
