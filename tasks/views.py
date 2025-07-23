@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from tasks import models
 from tasks.forms import TaskForm, TaskFilterForm, CommentForm
@@ -7,6 +7,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from tasks.mixins import UserIsOwnerMixin
 from django.http import HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
+from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
+from django.contrib import messages
 
 # Список існуючих задач
 class TaskListView(ListView):
@@ -38,7 +43,7 @@ class TaskListView(ListView):
 
 # Детальний перегляд задачі
 # DetailView приймає primary key
-class TaskDetailView(DetailView):
+class TaskDetailView(LoginRequiredMixin, DetailView):
     model = models.Task
     context_object_name = "task"
     template_name = "tasks/task_detail.html"
@@ -141,10 +146,21 @@ class CommentDeleteView(LoginRequiredMixin, DeleteView):
     model = models.Comment
     template_name = 'tasks/delete_comment.html'
 
-    # перевизнаємо метод, який повертає моделі коментарів (повертаємо лише коментарі того юзера, котрий відправив запит)
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        return queryset.filter(author=self.request.user)
+    def dispatch(self, request, *args, **kwargs):
+        # Отримуємо об'єкт коментаря
+        comment = self.get_object()
+        # Перевіряємо, чи є користувач автором коментаря
+        if comment.author != self.request.user:
+            # Додаємо повідомлення
+            messages.error(self.request, "Ви не можете видаляти коментарі інших користувачів.")
+            # Перенаправляємо назад на сторінку задачі
+            return HttpResponseRedirect(reverse_lazy('tasks:task-detail', kwargs={'pk': comment.task.pk}))
+        return super().dispatch(request, *args, **kwargs)
+
+    # # перевизнаємо метод, який повертає моделі коментарів (повертаємо лише коментарі того юзера, котрий відправив запит)
+    # def get_queryset(self):
+    #     queryset = super().get_queryset()
+    #     return queryset.filter(author=self.request.user)
 
     # перевизначимо метод, що вказує URL, на який користувач буде перенаправлений після успішного видалення коментаря
     def get_success_url(self):
@@ -162,3 +178,26 @@ class CommentLikeToggle(LoginRequiredMixin, View):
         else:
             models.Like.objects.create(comment=comment, user=request.user)
         return HttpResponseRedirect(comment.get_absolute_url())
+    
+
+# В'ю для логіну користувача
+class CustomLoginView(LoginView):
+    template_name = "tasks/login.html"
+    # після успішного логіну перенаправляємо юзера на сторінку, посилання на яку вказано в settings
+    redirect_authenticated_user = True
+
+
+# В'ю для логауту користувача
+class CustomLogoutView(LogoutView):
+    next_page = "tasks:login"
+
+
+# В'ю для реєстрації користувача
+class RegisterView(CreateView):
+    template_name = "tasks/register.html"
+    form_class = UserCreationForm
+
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+        return redirect(reverse_lazy("tasks:login"))

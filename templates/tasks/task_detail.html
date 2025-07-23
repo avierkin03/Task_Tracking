@@ -13,6 +13,13 @@
     <!-- Коментарі -->
     <div class="comments mt-4">
         <h3>Коментарі</h3>
+        {% if messages %}
+           
+            {% for message in messages %}
+                <p class="alert alert-warning" role="alert">{{ message }}</p>
+            {% endfor %}
+            
+        {% endif %}
         {% for comment in task.comments.all %}
             <div class="comment mb-2">
                 <p>
