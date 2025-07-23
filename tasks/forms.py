@@ -1,5 +1,7 @@
 from django import forms
 from tasks.models import Task, Comment
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 
 class TaskForm(forms.ModelForm):
     class Meta:
@@ -37,7 +39,11 @@ class TaskFilterForm(forms.Form):
         self.fields["priority"].widget.attrs.update({"class": "form-control"})
 
 
+# Форма для додавання коментаря
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ['content']
+        fields = ['content', "media"]
+        widgets = {
+            "media": forms.FileInput()
+        }
