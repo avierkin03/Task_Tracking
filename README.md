@@ -66,6 +66,22 @@ Task Tracking is a Django-based web application designed for managing tasks. Use
 5. **Edit/Delete Tasks**: Task creators can update or delete their tasks.
 6. **Comment Actions**: Comment authors can edit or delete their comments, and authenticated users can toggle likes on comments.
 
+## Screenshots
+
+Below are screenshots showcasing key pages of the Hotel Room Booking System:
+
+| Main Page |Task Creation Page |
+|-----------|--------------|
+| ![Main Page](screenshots/main_page.png) | ![Task Creation Page](screenshots/task_create.png) |
+
+| Task Update Page | Task Delete Page |
+|-----------------|---------------|
+| ![Task Update Page](screenshots/task_update.png) | ![Task Delete Page](screenshots/task_delete.png) |
+
+| Task Detail Page |
+|------------|
+| ![Task Detail Page](screenshots/task_detail.png) |
+
 ## Configuration
 - **Media Files**: Configure `MEDIA_URL` and `MEDIA_ROOT` in `settings.py` to handle file uploads for comments.
 - **Authentication**: The app uses Django's built-in authentication system. Customize `LOGIN_REDIRECT_URL` and `LOGOUT_REDIRECT_URL` as needed.
