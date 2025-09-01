@@ -7,8 +7,10 @@
     <p>{{ task.description }}</p>
     <p>Статус: <span class="badge badge-primary">{{ task.status }}</span></p>
     <p>Пріоритет: <span class="badge badge-secondary">{{ task.priority }}</span></p>
-    <a href="{% url 'tasks:task-update' task.id%}" class="btn btn-warning">Редагувати</a>
-    <a href="{% url 'tasks:task-delete' task.id%}" class="btn btn-danger">Видалити</a>
+    {% if task.creator == request.user %}
+        <a href="{% url 'tasks:task-update' task.id%}" class="btn btn-warning">Редагувати</a>
+        <a href="{% url 'tasks:task-delete' task.id%}" class="btn btn-danger">Видалити</a>
+    {% endif %}
 
     <!-- Коментарі -->
     <div class="comments mt-4">
@@ -24,8 +26,10 @@
             <div class="comment mb-2">
                 <p>
                     {{ comment.content }}
-                    <a href="{% url 'tasks:edit_comment' comment.id%}" class="btn btn-outline-warning btn-sm">Редагувати</a>
-                    <a href="{% url 'tasks:delete_comment' comment.id%}" class="btn btn-outline-danger btn-sm">Видалити</a>
+                    {% if comment.author == request.user %}
+                        <a href="{% url 'tasks:edit_comment' comment.id%}" class="btn btn-outline-warning btn-sm">Редагувати</a>
+                        <a href="{% url 'tasks:delete_comment' comment.id%}" class="btn btn-outline-danger btn-sm">Видалити</a>
+                    {% endif %}
                 </p>
                 {% if comment.media %}
                     <div class="comment-media">

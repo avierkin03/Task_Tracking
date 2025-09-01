@@ -128,13 +128,17 @@ class CommentUpdateView(LoginRequiredMixin, UpdateView):
     model = models.Comment
     fields = ['content']
     template_name = 'tasks/edit_comment.html'
-
-    # перевизначимо метод form_valid
-    def form_valid(self, form):
+    
+    def dispatch(self, request, *args, **kwargs):
+        # Отримуємо об'єкт коментаря
         comment = self.get_object()
+        # Перевіряємо, чи є користувач автором коментаря
         if comment.author != self.request.user:
-            raise PermissionDenied("Ви не можете редагувати цей коментар.")
-        return super().form_valid(form)
+            # Додаємо повідомлення
+            messages.error(self.request, "Ви не можете редагувати коментарі інших користувачів.")
+            # Перенаправляємо назад на сторінку задачі
+            return HttpResponseRedirect(reverse_lazy('tasks:task-detail', kwargs={'pk': comment.task.pk}))
+        return super().dispatch(request, *args, **kwargs)
     
     # перевизначимо метод, що вказує URL, на який користувач буде перенаправлений після успішного оновлення коментаря через форму
     def get_success_url(self):
@@ -189,7 +193,7 @@ class CustomLoginView(LoginView):
 
 # В'ю для логауту користувача
 class CustomLogoutView(LogoutView):
-    next_page = "tasks:login"
+    next_page = "tasks:task-list"
 
 
 # В'ю для реєстрації користувача
