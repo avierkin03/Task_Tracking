@@ -68,7 +68,7 @@ Task Tracking is a Django-based web application designed for managing tasks. Use
 
 ## Screenshots
 
-Below are screenshots showcasing key pages of the Hotel Room Booking System:
+Below are screenshots showcasing key pages of the Task Tracking System:
 
 | Main Page |Task Creation Page |
 |-----------|--------------|
